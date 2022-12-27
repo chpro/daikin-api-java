@@ -2,10 +2,8 @@
 package chpro.daikin.api.client.data;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,40 +35,55 @@ public class RawData {
 
     }
 
-    public String getRawValue(Field key) {
-        return parsedRawData.get(key.id);
+    /**
+     * 
+     * @param field The field to receive value from
+     * @return The raw field value as received by the original request
+     */
+    public String getRawValue(FieldInfo field) {
+        return parsedRawData.get(field.getId());
     }
 
-    public String getDecodedValue(Field key) {
-        String rawValue = getRawValue(key);
-        if (key.isDecode()) {
-            if (key.isNumber()) {
-                return parseHexToString(rawValue);
+    /**
+     * 
+     * @param field The field to receive encoded value from
+     * @return
+     */
+    public String getDecodedValue(FieldInfo field) {
+        String rawValue = getRawValue(field);
+        if (field.isEncoded()) {
+            if (field.isNumber()) {
+                return convertHexToString(rawValue);
             } else {
-                try {
-                    return URLDecoder.decode(rawValue, StandardCharsets.UTF_8.name());
-                } catch (UnsupportedEncodingException e) {
-                    LOG.error(String.format("Was not able to decode string %s. Returning raw value", rawValue), e);
-                }
+                return URLDecoder.decode(rawValue, StandardCharsets.UTF_8);
             }
         }
         return rawValue;
     }
 
-    public BigDecimal getNumberValue(Field key) {
-        return BigDecimal.valueOf(Double.parseDouble(getDecodedValue(key))).divide(BigDecimal.valueOf(key.getScale()));
+    /**
+     * 
+     * @param field The field to receive parsed number value
+     * @return The value as BigDecimal which was parsed as double. Additionally the number will be divided by the {@link FieldInfo#getScale()}
+     * @throws NumberFormatException if the field value does not contain a parsable double value
+     */
+    public BigDecimal getNumberValue(FieldInfo field) throws NumberFormatException {
+        return BigDecimal.valueOf(Double.parseDouble(getDecodedValue(field))).divide(BigDecimal.valueOf(field.getScale()));
     }
 
-    
-
-    protected String parseHexToString(String hex) {
+    /**
+     * Some numbers are encoded in two char hexformat e.g. "303030" will be converted to "000"
+     * @param hex The string which contains the hex sequence
+     * @return The string which was constructed during conversion
+     */
+    protected String convertHexToString(String hex) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < hex.length(); i += 2) {
             String str = hex.substring(i, i + 2);
             int byteVal = Integer.parseInt(str, 16);
             baos.write(byteVal);
         }
-        return new String(baos.toByteArray(), Charset.forName("UTF-8"));
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
     @Override
@@ -78,7 +91,7 @@ public class RawData {
         return this.getClass().getName() + " [" + rawData + "]";
     }
 
-    public static enum Field {
+    public static enum Field implements FieldInfo {
 
         // common basic
         DST("dst", false, true, 1), // Value=1
@@ -209,34 +222,50 @@ public class RawData {
         CMPFRQ("cmpfrq", true, true, 1), // Value=303030
         OTMP("otmp", true, true, 1); // Value=2b303530
 
-        protected final String id;
-        public final boolean decode;
-        public final boolean number;
-        public final int scale;
+        private final String id;
+        private final boolean encoded;
+        private final boolean number;
+        private final int scale;
 
-        private Field(String id, boolean decode, boolean number, int scale) {
+        private Field(String id, boolean encoded, boolean number, int scale) {
             this.id = id;
-            this.decode = decode;
+            this.encoded = encoded;
             this.number = number;
             this.scale = scale;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public String getId() {
             return id;
         }
 
-        public boolean isDecode() {
-            return decode;
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isEncoded() {
+            return encoded;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean isNumber() {
             return number;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public int getScale() {
             return scale;
         }
-        
+
         public static Field getById(String id) {
             return Field.valueOf(id.toUpperCase());
         }
