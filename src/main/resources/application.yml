@@ -1,0 +1,12 @@
+micronaut:
+  application:
+    name: api
+
+daikin:
+  api:
+    discover:
+      bind:
+        address: 192.168.1.255
+        port: 30050
+      probe-data: DAIKIN_UDP/common/basic_info
+      buffer-size: 8192
