@@ -20,6 +20,8 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-http-client")
+    // using http apache http client because netty has some unexpected timeouts
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'
 
     testImplementation("io.micronaut:micronaut-http-client")
 
@@ -30,8 +32,8 @@ application {
     mainClass.set("chpro.daikin.api.ApiCommand")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("17")
-    targetCompatibility = JavaVersion.toVersion("17")
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
 }
 
 micronaut {

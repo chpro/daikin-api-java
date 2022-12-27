@@ -20,11 +20,17 @@ public class RawData {
 
     protected Map<String, String> parsedRawData;
 
+    public RawData() {
+        setRawData(null);
+    }
     public RawData(String rawData) {
         setRawData(rawData);
     }
 
     public void setRawData(String data) {
+        if (data == null) {
+            return;
+        }
         this.rawData = data;
         parsedRawData = Stream.of(data.split(",")).map(str -> str.split("="))
                 .collect(Collectors.toMap(str -> str[0], str -> (str.length <= 1 ? "" : str[1])));
