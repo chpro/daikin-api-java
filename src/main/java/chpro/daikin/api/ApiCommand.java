@@ -21,7 +21,7 @@ public class ApiCommand implements Runnable {
     @Option(names = { "-d", "--discover" }, description = "Start discover of daikin devices on network")
     boolean discover;
     
-    @Option(names = { "-g", "--get" }, description = "Start discover of daikin devices on network")
+    @Option(names = { "-g", "--get" }, description = "Get and print all available endpoints")
     boolean get;
     
     @Option(names = { "-i", "--ips" }, description = "The ip addresses of the devices for which the request should be sent used with -g (--get) option")
