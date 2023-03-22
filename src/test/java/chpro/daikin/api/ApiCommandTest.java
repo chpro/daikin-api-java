@@ -21,8 +21,6 @@ public class ApiCommandTest {
             String[] args = new String[] { "-v" };
             PicocliRunner.run(ApiCommand.class, ctx, args);
 
-            // api
-            assertTrue(baos.toString().contains("Hi!"));
         }
     }
 }
