@@ -33,7 +33,7 @@ public class RawData {
         }
         this.rawData = data;
         parsedRawData = Stream.of(data.split(",")).map(str -> str.split("="))
-                .collect(Collectors.toMap(str -> str[0], str -> (str.length <= 1 ? "" : str[1])));
+                .collect(Collectors.toMap(str -> str[0], str -> (str.length <= 1 ? "" : str[1]), (val1, val2) -> {return val1;}));
         if (LOG.isTraceEnabled()) {
             LOG.trace("Parsed string contains {} entries", parsedRawData.size());
             parsedRawData.forEach((key, value) -> LOG.trace("Key={} : Value={}", key, value));
