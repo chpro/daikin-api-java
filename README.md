@@ -32,13 +32,3 @@ For each available field in the response you can either get the raw value the de
 
 The information how a field needs to be handled is configured via `chpro.daikin.api.client.data.FieldInfo`.
 There is an enum `chpro.daikin.api.client.data.Field` which contains already most common field configurations.
-
-## Micronaut 3.7.4 Documentation
-
-- [User Guide](https://docs.micronaut.io/3.7.4/guide/index.html)
-- [API Reference](https://docs.micronaut.io/3.7.4/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/3.7.4/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
-
-- [Shadow Gradle Plugin](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
